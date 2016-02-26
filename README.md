@@ -1,4 +1,4 @@
-# ember-cli-node-assets
+# ember-cli-node-assets [![Build Status](https://travis-ci.org/dfreeman/ember-cli-node-assets.svg?branch=master)](https://travis-ci.org/dfreeman/ember-cli-node-assets)
 
 Incorporate stylesheets, images, globals-style scripts and other assets directly from node modules into your Ember app or addon.
 
