@@ -3,8 +3,12 @@
 
 var path = require('path');
 var resolve = require('resolve');
-var clone = require('clone');
 var debug = require('debug')('ember-cli-node-assets');
+var clone = require('lodash/clone');
+var pick = require('lodash/pick');
+var map = require('lodash/map');
+var omit = require('lodash/omit');
+
 
 var Funnel = require('broccoli-funnel');
 var UnwatchedTree = require('broccoli-unwatched-tree');
@@ -24,10 +28,11 @@ module.exports = {
 
     this.getOptions().modules.forEach(function(mod) {
       if (!mod.import) return;
-      mod.import.include.forEach(function(file) {
-        var fullPath = path.join('vendor', mod.import.destDir, file);
-        debug('importing %s', fullPath);
-        app.import(fullPath);
+      mod.import.include.forEach(function(item) {
+        var fullPath = path.join('vendor', mod.import.destDir, item.path);
+        var options = omit(item, 'path');
+        debug('importing %s with options %o', fullPath, options);
+        app.import(fullPath, options);
       });
     });
   },
@@ -58,7 +63,10 @@ function normalizeOptions(parent, options) {
       moduleOptions = moduleOptions.call(parent);
     }
 
-    if ('enabled' in moduleOptions && !moduleOptions.enabled) { return; }
+    if ('enabled' in moduleOptions && !moduleOptions.enabled) {
+      debug('skipping disabled module %s', name);
+      return;
+    }
 
     return {
       name: name,
@@ -77,6 +85,10 @@ function normalizeFunnelOptions(options, key, defaultDestDir) {
   if (Array.isArray(normalized)) {
     normalized = { include: normalized };
   }
+
+  normalized.include = normalized.include.map(function(item) {
+    return typeof item === 'string' ? { path: item } : item;
+  });
 
   if (options.srcDir && !normalized.srcDir) {
     normalized.srcDir = options.srcDir;
@@ -110,6 +122,9 @@ function collectModuleTrees(type, modules, parent) {
 
 function npmTree(name, parent, options) {
   var root = path.dirname(resolve.sync(name + '/package.json', { basedir: parent.root }));
-  debug('adding tree for %s at %s %o', name, root, options);
-  return new Funnel(new UnwatchedTree(root), options);
+  var funnelOptions = pick(options, 'srcDir', 'destDir', 'include', 'exclude');
+  funnelOptions.include = map(funnelOptions.include, 'path');
+
+  debug('adding tree for %s at %s %o', name, root, funnelOptions);
+  return new Funnel(new UnwatchedTree(root), funnelOptions);
 }

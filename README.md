@@ -60,7 +60,9 @@ nodeAssets: {
 
 Assets that should be imported into your app or addon's `vendor.js` or `vendor.css` can be configured via a hash under the `import` key. Options:
 
-- `include`: an array of strings representing the paths to files that should be imported and concatenated into `vendor.js` or `vendor.css`
+- `include`: an array of files that should be imported and concatenated into the served JS or CSS files. Each file may be:
+   - a string representing the path to file that should be imported
+   - a hash containing a `path` key with the path to the file, as well as any other options to be specified to [`app.import`](http://ember-cli.com/user-guide/), like `type: 'test'` or `prepend: true`
 - `srcDir` (optional): the source directory (relative to the module's directory) from which files should be included
 - `processTree` (optional): a function to perform any necessary processing on the Broccoli tree containing the given files before they are imported
 
