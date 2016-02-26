@@ -80,3 +80,16 @@ Note that you may pass an array of strings as the value for `public` instead of 
 ### Shared Source directory
 
 If your public and imported assets share a common source directory (e.g. `dist` or `build`), you may specify that as `srcDir` on the root configuration hash for the module, as in the usage example above.
+
+### Disabling Modules
+
+If you have a module that you'd only like to include in certain situations, like an error reporting library you only want in production builds, you can include an `enabled` flag in the configuration for that model.
+
+```js
+nodeAssets: {
+  'bug-reporter': {
+    enabled: EmberApp.env() === 'production',
+    import: ['bug-reporter.js']
+  }
+}
+```

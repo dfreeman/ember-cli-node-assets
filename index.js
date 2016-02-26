@@ -58,6 +58,8 @@ function normalizeOptions(parent, options) {
       moduleOptions = moduleOptions.call(parent);
     }
 
+    if ('enabled' in moduleOptions && !moduleOptions.enabled) { return; }
+
     return {
       name: name,
       import: normalizeFunnelOptions(moduleOptions, 'import', name),
@@ -65,7 +67,7 @@ function normalizeOptions(parent, options) {
     };
   });
 
-  return { modules: modules };
+  return { modules: modules.filter(Boolean) };
 }
 
 function normalizeFunnelOptions(options, key, defaultDestDir) {
