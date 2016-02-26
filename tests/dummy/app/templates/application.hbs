@@ -1,3 +1,9 @@
-<h2 id="title">Welcome to Ember</h2>
-
-{{outlet}}
+<div class="carousel">
+  {{#slick-carousel}}
+    {{#each widths as |width|}}
+      <div class="carousel-item">
+        <img data-lazy="http://placebear.com/{{width}}/300">
+      </div>
+    {{/each}}
+  {{/slick-carousel}}
+</div>

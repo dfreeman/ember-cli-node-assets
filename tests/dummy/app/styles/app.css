@@ -1,0 +1,15 @@
+body {
+  background-color: #9cf;
+}
+
+.carousel {
+  width: 75%;
+  margin: auto;
+  padding: 5em;
+}
+
+.carousel-item {
+  padding: 0 5px;
+  width: 200px;
+  overflow: hidden;
+}
