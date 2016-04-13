@@ -58,9 +58,11 @@ function normalizeOptions(parent, options) {
   if (!options) { return { modules: [] }; }
 
   var modules = Object.keys(options).map(function(name) {
-    var moduleOptions = clone(options[name]);
+    var moduleOptions = options[name];
     if (typeof moduleOptions === 'function') {
       moduleOptions = moduleOptions.call(parent);
+    } else {
+      moduleOptions = clone(moduleOptions);
     }
 
     if ('enabled' in moduleOptions && !moduleOptions.enabled) {

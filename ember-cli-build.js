@@ -5,10 +5,12 @@ var EmberAddon = require('ember-cli/lib/broccoli/ember-addon');
 module.exports = function(defaults) {
   var app = new EmberAddon(defaults, {
     nodeAssets: {
-      'slick-carousel': {
-        srcDir: 'slick',
-        import: ['slick.js', 'slick.css', 'slick-theme.css'],
-        public: ['ajax-loader.gif', 'fonts/*']
+      'slick-carousel': function() {
+        return {
+          srcDir: 'slick',
+          import: ['slick.js', 'slick.css', 'slick-theme.css'],
+          public: ['ajax-loader.gif', 'fonts/*']
+        };
       },
 
       'non-existent-module': {
