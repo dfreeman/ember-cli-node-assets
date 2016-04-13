@@ -26,7 +26,7 @@ module.exports = {
     var app = this.app || this.parent.app;
     if (!app || !app.import) { return; }
 
-    this.getOptions().modules.forEach(function(mod) {
+    this.getModuleOptions().forEach(function(mod) {
       if (!mod.import) return;
       mod.import.include.forEach(function(item) {
         var fullPath = path.join('vendor', mod.import.destDir, item.path);
@@ -38,11 +38,19 @@ module.exports = {
   },
 
   treeForVendor: function() {
-    return treeFor('import', this.getOptions(), this.parent);
+    return treeFor('import', this.getModuleOptions(), this.parent);
   },
 
   treeForPublic: function() {
-    return treeFor('public', this.getOptions(), this.parent);
+    return treeFor('public', this.getModuleOptions(), this.parent);
+  },
+
+  getModuleOptions: function() {
+    // For dynamic module config, we need to re-evaluate each time because stuff like
+    // Fastboot may perform multiple builds from a single command with different config.
+    return this.getOptions().modules.map(function(mod) {
+      return typeof mod === 'function' ? mod() : mod;
+    }).filter(Boolean);
   },
 
   getOptions: function() {
@@ -60,24 +68,28 @@ function normalizeOptions(parent, options) {
   var modules = Object.keys(options).map(function(name) {
     var moduleOptions = options[name];
     if (typeof moduleOptions === 'function') {
-      moduleOptions = moduleOptions.call(parent);
+      return function() {
+        return normalizeModuleOptions(moduleOptions.call(parent), name);
+      };
     } else {
-      moduleOptions = clone(moduleOptions);
+      return normalizeModuleOptions(clone(moduleOptions), name);
     }
-
-    if ('enabled' in moduleOptions && !moduleOptions.enabled) {
-      debug('skipping disabled module %s', name);
-      return;
-    }
-
-    return {
-      name: name,
-      import: normalizeFunnelOptions(moduleOptions, 'import', name),
-      public: normalizeFunnelOptions(moduleOptions, 'public', 'assets')
-    };
   });
 
-  return { modules: modules.filter(Boolean) };
+  return { modules: modules };
+}
+
+function normalizeModuleOptions(moduleOptions, name) {
+  if ('enabled' in moduleOptions && !moduleOptions.enabled) {
+    debug('skipping disabled module %s', name);
+    return;
+  }
+
+  return {
+    name: name,
+    import: normalizeFunnelOptions(moduleOptions, 'import', name),
+    public: normalizeFunnelOptions(moduleOptions, 'public', 'assets')
+  };
 }
 
 function normalizeFunnelOptions(options, key, defaultDestDir) {
@@ -101,8 +113,8 @@ function normalizeFunnelOptions(options, key, defaultDestDir) {
   return normalized;
 }
 
-function treeFor(type, options, parent) {
-  var trees = collectModuleTrees(type, options.modules, parent);
+function treeFor(type, modules, parent) {
+  var trees = collectModuleTrees(type, modules, parent);
   if (trees.length === 1) {
     return trees[0];
   } else if (trees.length > 1) {
