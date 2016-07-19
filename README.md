@@ -62,7 +62,10 @@ Assets that should be imported into your app or addon's `vendor.js` or `vendor.c
 
 - `include`: an array of files that should be imported and concatenated into the served JS or CSS files. Each file may be:
    - a string representing the path to file that should be imported
-   - a hash containing a `path` key with the path to the file, as well as any other options to be specified to [`app.import`](http://ember-cli.com/user-guide/), like `type: 'test'` or `prepend: true`
+   - a hash containing the following keys:
+     - `path`: the location of the file (required)
+     - `sourceMap`: the location of an existing sourceMap for that file (optional)
+     - any other options to be specified to [`app.import`](http://ember-cli.com/user-guide/), like `type: 'test'` or `prepend: true` (optional)
 - `srcDir` (optional): the source directory (relative to the module's directory) from which files should be included
 - `processTree` (optional): a function to perform any necessary processing on the Broccoli tree containing the given files before they are imported
 

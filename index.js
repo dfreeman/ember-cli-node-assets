@@ -30,7 +30,7 @@ module.exports = {
       if (!mod.import) return;
       mod.import.include.forEach(function(item) {
         var fullPath = path.join('vendor', mod.import.destDir, item.path);
-        var options = omit(item, 'path');
+        var options = omit(item, 'path', 'sourceMap');
         debug('importing %s with options %o', fullPath, options);
         app.import(fullPath, options);
       });
@@ -137,8 +137,21 @@ function collectModuleTrees(type, modules, parent) {
 function npmTree(name, parent, options) {
   var root = path.dirname(resolve.sync(name + '/package.json', { basedir: parent.root }));
   var funnelOptions = pick(options, 'srcDir', 'destDir', 'include', 'exclude');
-  funnelOptions.include = map(funnelOptions.include, 'path');
+  funnelOptions.include = normalizeIncludes(funnelOptions.include);
 
   debug('adding tree for %s at %s %o', name, root, funnelOptions);
   return new Funnel(new UnwatchedTree(root), funnelOptions);
+}
+
+function normalizeIncludes(includes) {
+  var result = [];
+
+  includes.forEach(function(include) {
+    result.push(include.path);
+    if (include.sourceMap) {
+      result.push(include.sourceMap);
+    }
+  });
+
+  return result;
 }
