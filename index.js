@@ -2,17 +2,7 @@
 'use strict';
 
 var path = require('path');
-var resolve = require('resolve');
 var debug = require('debug')('ember-cli-node-assets');
-var clone = require('lodash/clone');
-var pick = require('lodash/pick');
-var map = require('lodash/map');
-var omit = require('lodash/omit');
-
-
-var Funnel = require('broccoli-funnel');
-var UnwatchedTree = require('broccoli-unwatched-tree');
-var MergeTrees = require('broccoli-merge-trees');
 
 module.exports = {
   name: 'ember-cli-node-assets',
@@ -26,6 +16,7 @@ module.exports = {
     var app = this.app || this.parent.app;
     if (!app || !app.import) { return; }
 
+    var omit = require('lodash/omit');
     this.getModuleOptions().forEach(function(mod) {
       if (!mod.import) return;
       mod.import.include.forEach(function(item) {
@@ -72,7 +63,7 @@ function normalizeOptions(parent, options) {
         return normalizeModuleOptions(moduleOptions.call(parent), name);
       };
     } else {
-      return normalizeModuleOptions(clone(moduleOptions), name);
+      return normalizeModuleOptions(require('lodash/clone')(moduleOptions), name);
     }
   });
 
@@ -118,7 +109,7 @@ function treeFor(type, modules, parent) {
   if (trees.length === 1) {
     return trees[0];
   } else if (trees.length > 1) {
-    return new MergeTrees(trees, { annotation: 'ember-cli-node-assets (' + type + ')' });
+    return require('broccoli-merge-trees')(trees, { annotation: 'ember-cli-node-assets (' + type + ')' });
   }
 }
 
@@ -135,23 +126,20 @@ function collectModuleTrees(type, modules, parent) {
 }
 
 function npmTree(name, parent, options) {
+  var pick = require('lodash/pick');
+  var map = require('lodash/map');
+  var resolve = require('resolve');
+
   var root = path.dirname(resolve.sync(name + '/package.json', { basedir: parent.root }));
   var funnelOptions = pick(options, 'srcDir', 'destDir', 'include', 'exclude');
-  funnelOptions.include = normalizeIncludes(funnelOptions.include);
+  funnelOptions.include = map(funnelOptions.include, 'path');
 
   debug('adding tree for %s at %s %o', name, root, funnelOptions);
+  var Funnel = require('broccoli-funnel');
+  var UnwatchedTree = require('broccoli-unwatched-tree');
   return new Funnel(new UnwatchedTree(root), funnelOptions);
 }
 
 function normalizeIncludes(includes) {
-  var result = [];
-
-  includes.forEach(function(include) {
-    result.push(include.path);
-    if (include.sourceMap) {
-      result.push(include.sourceMap);
-    }
-  });
-
-  return result;
+  var includes = [];
 }
