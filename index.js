@@ -7,7 +7,7 @@ var debug = require('debug')('ember-cli-node-assets');
 module.exports = {
   name: 'ember-cli-node-assets',
 
-  included: function(parent) {
+  included: function() {
     this._super.included.apply(this, arguments);
     this.doImports();
   },
