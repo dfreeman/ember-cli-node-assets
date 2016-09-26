@@ -48,11 +48,22 @@ If your required assets depend on runtime configuration (e.g. if you have an add
 ```js
 nodeAssets: {
   'some-node-module': function() {
+    // Within this function, `this` refers to your app or addon instance
     return {
       import: ['js/widget.js'],
-      public: ['css/widget-theme-' + this.config.theme + '.css']
+      public: ['css/widget-theme-' + this.addonOptions.theme + '.css']
     };
   }
+}
+```
+
+For addons, you'll want to make sure this configuration is available before your base `included()` hook is invoked. For instance, you might do something like:
+
+```js
+included: function(parent) {
+  this.addonOptions = parent.options && parent.options.myAddon || {};
+  this.addonOptions.theme = this.addonOptions.theme || 'light';
+  this._super.included.apply(this, arguments);
 }
 ```
 
