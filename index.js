@@ -20,7 +20,7 @@ module.exports = {
     this.getModuleOptions().forEach(function(mod) {
       if (!mod.import) return;
       mod.import.include.forEach(function(item) {
-        var fullPath = path.join('vendor', mod.import.destDir, item.path);
+        var fullPath = 'vendor/' + mod.import.destDir + '/' + item.path;
         var options = omit(item, 'path', 'sourceMap');
         debug('importing %s with options %o', fullPath, options);
         app.import(fullPath, options);
