@@ -127,12 +127,11 @@ function collectModuleTrees(type, modules, parent) {
 
 function npmTree(name, parent, options) {
   var pick = require('lodash/pick');
-  var map = require('lodash/map');
   var resolve = require('resolve');
 
   var root = path.dirname(resolve.sync(name + '/package.json', { basedir: parent.root }));
   var funnelOptions = pick(options, 'srcDir', 'destDir', 'include', 'exclude');
-  funnelOptions.include = map(funnelOptions.include, 'path');
+  funnelOptions.include = includePaths(funnelOptions.include);
 
   debug('adding tree for %s at %s %o', name, root, funnelOptions);
   var Funnel = require('broccoli-funnel');
@@ -140,6 +139,13 @@ function npmTree(name, parent, options) {
   return new Funnel(new UnwatchedTree(root), funnelOptions);
 }
 
-function normalizeIncludes(includes) {
-  var includes = [];
+function includePaths(includeConfig) {
+  var paths = [];
+  includeConfig.forEach(function(include) {
+    paths.push(include.path);
+    if (include.sourceMap) {
+      paths.push(include.sourceMap);
+    }
+  });
+  return paths;
 }
