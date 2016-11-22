@@ -67,6 +67,21 @@ included: function(parent) {
 }
 ```
 
+### AMD Imports
+
+Since version 2.9, ember-cli [supports importing assets distributed as anonymous AMD bundles](https://github.com/ember-cli/ember-cli/pull/5976), including [UMD](https://github.com/umdjs/umd) builds. Since additional options on import specifiers are passed through to `app.import()`, you can specify the transformation as part of your ember-cli-node-assets configuration:
+
+```js
+nodeAssets: {
+  'my-package': {
+    import: [{
+      path: 'dist/build.js',
+      using: [{ transformation: 'amd', as: 'my-package' }]
+    }]
+  }
+}
+```
+
 ### Imported Assets
 
 Assets that should be imported into your app or addon's `vendor.js` or `vendor.css` can be configured via a hash under the `import` key. Options:
