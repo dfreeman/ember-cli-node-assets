@@ -1,23 +1,16 @@
 ---
 language: node_js
 node_js:
-  - "0.12"
+  - "4"
+  - "node"
 
 sudo: false
 
 cache:
+  yarn: true
   directories:
     - node_modules
 
-before_install:
-  - export PATH=/usr/local/phantomjs-2.0.0/bin:$PATH
-  - "npm config set spin false"
-  - "npm install -g npm@^2"
-
-install:
-  - npm install -g bower
-  - npm install
+before_script:
+  - yarn global add bower phantomjs-prebuilt
   - bower install
-
-script:
-  - ember test

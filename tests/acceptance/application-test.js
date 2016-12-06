@@ -21,7 +21,7 @@ test('fetching public assets', function(assert) {
   return ajax.request('/assets/fonts/slick.woff', { method: 'HEAD' })
     .then(() => assert.ok(true))
     .catch((error) => {
-      console.log(error);
+      window.console.log(error);
       assert.ok(false);
     });
 });
