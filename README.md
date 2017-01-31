@@ -13,6 +13,8 @@ This addon aims to:
 
 ## Usage
 
+This addon allows you to add files from an npm package into an application's `public` and/or `vendor` trees at build time. Files in `public` will automatically be available in the final output in `dist/`, which is useful for assets like images or fonts. Files in `vendor` will be available to [`import()`](https://ember-cli.com/user-guide/#javascript-assets), allowing things like third party JavaScript or CSS to be built into the final output.
+
 Configuration for ember-cli-node-assets goes in the options you pass to `EmberApp` in an app's `ember-cli-build.js`, or in an `options` hash in an addon's `index.js` export.
 
 ```js
@@ -77,10 +79,10 @@ nodeAssets: {
     // Within this function, `this` refers to your app or addon instance
     return {
       vendor: {
-        include: ['js/widget.js']
+        include: ['js/widget.js', `css/${this.addonOptions.theme}.css`]
       },
       public: {
-        include: ['css/widget-theme-' + this.addonOptions.theme + '.css']
+        include: [`icons/${this.addonOptions.theme}/*.png`]
       }
     };
   }
@@ -93,7 +95,11 @@ For addons, you'll want to make sure this configuration is available before your
 included: function(parent) {
   this.addonOptions = parent.options && parent.options.myAddon || {};
   this.addonOptions.theme = this.addonOptions.theme || 'light';
+
   this._super.included.apply(this, arguments);
+
+  this.import('vendor/some-node-module/js/widget.js');
+  this.import(`vendor/some-node-module/css/${this.addonOptions.theme}.css`);
 }
 ```
 
@@ -189,7 +195,7 @@ If the only piece of configuration you need to specify for a tree is the `includ
 
 If you're including files in `vendor` just to `app.import` them later, you can specify an `import` key rather than a `vendor` one to automatically import them from the vendor directory. You can specify exactly the same options to `import` as you would specify to `vendor` (and the same shorthand options apply), with the exception that the `include` array cannot include globs.
 
-The configuration below is equivalent to all other sample `slick-carousel` config in this README, except that no manual `app.import` calls are required. Notice that the `import` paths are relative to the package root, just as they are for `vendor` — the calls to `import()` will automatically be prefixed with `vendor/<destDir>/`.
+The configuration below is equivalent to all other sample `slick-carousel` config in this README, except that no manual `app.import` calls are required. Notice that the `import` paths are relative to the package root, just as they are for `vendor`. When ember-cli-node-assets calls `import()` for you, it will automatically prefix the paths with `vendor/<destDir>/`.
 
 ```js
 'slick-carousel': {
