@@ -1,151 +1,53 @@
-/* jshint node: true */
+/* eslint-env node */
 'use strict';
-
-var path = require('path');
-var debug = require('debug')('ember-cli-node-assets');
 
 module.exports = {
   name: 'ember-cli-node-assets',
 
   included: function() {
     this._super.included.apply(this, arguments);
-    this.doImports();
+    this.performImports();
   },
 
-  doImports: function() {
-    var app = this.app || this.parent.app;
-    if (!app || !app.import) { return; }
-
-    var omit = require('lodash/omit');
-    this.getModuleOptions().forEach(function(mod) {
-      if (!mod.import) return;
-      mod.import.include.forEach(function(item) {
-        var fullPath = 'vendor/' + mod.import.destDir + '/' + item.path;
-        var options = omit(item, 'path', 'sourceMap');
-        debug('importing %s with options %o', fullPath, options);
-        app.import(fullPath, options);
-      });
-    });
+  performImports: function() {
+    var importer = this.import ? this : findHost(this);
+    require('./lib/perform-imports')(importer, this.ui, this.getOptions());
   },
 
   treeForVendor: function() {
-    return treeFor('import', this.getModuleOptions(), this.parent);
+    return require('./lib/tree-for')(this.getOptions(), this.parent, ['vendor', 'import']);
   },
 
   treeForPublic: function() {
-    return treeFor('public', this.getModuleOptions(), this.parent);
-  },
-
-  getModuleOptions: function() {
-    // For dynamic module config, we need to re-evaluate each time because stuff like
-    // Fastboot may perform multiple builds from a single command with different config.
-    return this.getOptions().modules.map(function(mod) {
-      return typeof mod === 'function' ? mod() : mod;
-    }).filter(Boolean);
+    return require('./lib/tree-for')(this.getOptions(), this.parent, ['public']);
   },
 
   getOptions: function() {
     if (!this._options) {
-      var options = this.app ? this.app.options : this.parent.options;
-      this._options = normalizeOptions(this.parent, options && options.nodeAssets);
+      var userOptions = this.app ? this.app.options : this.parent.options;
+      this._options = normalizeUserOptions(userOptions && userOptions.nodeAssets || {});
     }
     return this._options;
   }
 };
 
-function normalizeOptions(parent, options) {
-  if (!options) { return { modules: [] }; }
-
-  var modules = Object.keys(options).map(function(name) {
-    var moduleOptions = options[name];
-    if (typeof moduleOptions === 'function') {
-      return function() {
-        return normalizeModuleOptions(moduleOptions.call(parent), name);
-      };
-    } else {
-      return normalizeModuleOptions(require('lodash/clone')(moduleOptions), name);
-    }
-  });
-
-  return { modules: modules };
-}
-
-function normalizeModuleOptions(moduleOptions, name) {
-  if ('enabled' in moduleOptions && !moduleOptions.enabled) {
-    debug('skipping disabled module %s', name);
-    return;
-  }
-
-  return {
-    name: name,
-    import: normalizeFunnelOptions(moduleOptions, 'import', name),
-    public: normalizeFunnelOptions(moduleOptions, 'public', 'assets')
-  };
-}
-
-function normalizeFunnelOptions(options, key, defaultDestDir) {
-  var normalized = options[key];
-  if (!normalized) { return; }
-
-  if (Array.isArray(normalized)) {
-    normalized = { include: normalized };
-  }
-
-  normalized.include = normalized.include.map(function(item) {
-    return typeof item === 'string' ? { path: item } : item;
-  });
-
-  if (options.srcDir && !normalized.srcDir) {
-    normalized.srcDir = options.srcDir;
-  }
-
-  normalized.destDir = normalized.destDir || defaultDestDir;
-
-  return normalized;
-}
-
-function treeFor(type, modules, parent) {
-  var trees = collectModuleTrees(type, modules, parent);
-  if (trees.length === 1) {
-    return trees[0];
-  } else if (trees.length > 1) {
-    return require('broccoli-merge-trees')(trees, { annotation: 'ember-cli-node-assets (' + type + ')' });
-  }
-}
-
-function collectModuleTrees(type, modules, parent) {
-  return modules.filter(function(mod) {
-    return mod[type];
-  }).map(function(mod) {
-    var tree = npmTree(mod.name, parent, mod[type]);
-    if (mod[type].processTree) {
-      tree = mod[type].processTree.call(parent, tree);
-    }
-    return tree;
+function normalizeUserOptions(options) {
+  var normalizePackageConfig = require('./lib/normalize-package-config');
+  return Object.keys(options).map(function(packageName) {
+    return {
+      name: packageName,
+      config: normalizePackageConfig(packageName, options[packageName])
+    };
   });
 }
 
-function npmTree(name, parent, options) {
-  var pick = require('lodash/pick');
-  var resolve = require('resolve');
+function findHost(addon) {
+  var current = addon;
+  var app;
 
-  var root = path.dirname(resolve.sync(name + '/package.json', { basedir: parent.root }));
-  var funnelOptions = pick(options, 'srcDir', 'destDir', 'include', 'exclude');
-  funnelOptions.include = includePaths(funnelOptions.include);
+  do {
+    app = current.app || app;
+  } while (current.parent.parent && (current = current.parent));
 
-  debug('adding tree for %s at %s %o', name, root, funnelOptions);
-  var Funnel = require('broccoli-funnel');
-  var UnwatchedTree = require('broccoli-unwatched-tree');
-  return new Funnel(new UnwatchedTree(root), funnelOptions);
-}
-
-function includePaths(includeConfig) {
-  var paths = [];
-  includeConfig.forEach(function(include) {
-    paths.push(include.path);
-    if (include.sourceMap) {
-      paths.push(include.sourceMap);
-    }
-  });
-  return paths;
+  return app;
 }
