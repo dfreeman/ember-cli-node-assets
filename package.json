@@ -1,6 +1,6 @@
 {
   "name": "ember-cli-node-assets",
-  "version": "0.1.6",
+  "version": "0.2.0-beta.1",
   "description": "Include CSS, images and other assets in your app or addon directly from node modules",
   "directories": {
     "doc": "doc",
