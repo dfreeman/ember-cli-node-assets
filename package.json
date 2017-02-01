@@ -13,7 +13,7 @@
   },
   "repository": "dfreeman/ember-cli-node-assets",
   "engines": {
-    "node": ">= 0.10.0"
+    "node": ">= 4"
   },
   "author": "Dan Freeman",
   "license": "MIT",
