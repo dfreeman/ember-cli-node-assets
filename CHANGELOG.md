@@ -1,3 +1,7 @@
+## 0.2.0-beta.2 (February 1, 2017)
+### Fixed
+- Dynamic configuration functions are called with the correct `this` value ([#8](https://github.com/dfreeman/ember-cli-node-assets/issues/8))
+
 ## 0.2.0-beta.1 (January 31, 2017)
 ### Added
 - Users can now specify `vendor` configuration to funnel files into the vendor tree without implicitly importing anything.
