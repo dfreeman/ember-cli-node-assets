@@ -25,18 +25,19 @@ module.exports = {
   getOptions: function() {
     if (!this._options) {
       var userOptions = this.app ? this.app.options : this.parent.options;
-      this._options = normalizeUserOptions(userOptions && userOptions.nodeAssets || {});
+      var assetOptions = userOptions && userOptions.nodeAssets || {};
+      this._options = normalizeUserOptions(this.app || this.parent, assetOptions);
     }
     return this._options;
   }
 };
 
-function normalizeUserOptions(options) {
+function normalizeUserOptions(parent, options) {
   var normalizePackageConfig = require('./lib/normalize-package-config');
   return Object.keys(options).map(function(packageName) {
     return {
       name: packageName,
-      config: normalizePackageConfig(packageName, options[packageName])
+      config: normalizePackageConfig(packageName, parent, options[packageName])
     };
   });
 }
