@@ -128,7 +128,7 @@ if (EmberApp.env() === 'production') {
 
 ## Modifying Included Files
 
-If you wish to perform additional processing on a set of files before they're added to `vendor` or `public`, you can define a `postprocessTree()` function to execute your Broccoli-fu. For instance, if you're importing a stylesheet and need to update relative paths where it references included assets, you might use something like [broccoli-postcss](https://github.com/jeffjewiss/broccoli-postcss):
+If you wish to perform additional processing on a set of files before they're added to `vendor` or `public`, you can define a `processTree()` function to execute your Broccoli-fu. For instance, if you're importing a stylesheet and need to update relative paths where it references included assets, you might use something like [broccoli-postcss](https://github.com/jeffjewiss/broccoli-postcss):
 
 ```js
 const BroccoliPostCSS = require('broccoli-postcss');
@@ -142,7 +142,7 @@ nodeAssets: {
     },
     vendor: {
       include: ['css/some-lib.css'],
-      postprocessTree(input) {
+      processTree(input) {
         return new BroccoliPostCSS(input, {
           plugins: [{
             module: require('postcss-url'),
