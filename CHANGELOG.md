@@ -1,3 +1,10 @@
+## 0.2.0 (March 20, 2017)
+
+Addon authors, note that this release impacts behavior when your addon is included as a transitive dependency! See the notes for the beta releases below.
+
+### Fixed
+- The `engines` entry in `package.json` now reflects that this addon requires Node 4+.
+
 ## 0.2.0-beta.2 (February 1, 2017)
 ### Fixed
 - Dynamic configuration functions are called with the correct `this` value ([#8](https://github.com/dfreeman/ember-cli-node-assets/issues/8))
