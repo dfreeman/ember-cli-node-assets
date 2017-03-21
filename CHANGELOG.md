@@ -1,3 +1,7 @@
+## 0.2.1 (March 21, 2017)
+### Fixed
+- Package config callbacks that return nothing (i.e. are acting as disabled) are now handled correctly.
+
 ## 0.2.0 (March 20, 2017)
 
 Addon authors, note that this release impacts behavior when your addon is included as a transitive dependency! See the notes for the beta releases below.
