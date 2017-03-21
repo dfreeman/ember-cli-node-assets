@@ -30,6 +30,18 @@ describe('performImports', function() {
     expect(importer.import.getCall(1).args).to.deep.equal(['vendor/some-package/bar/baz.js']);
   });
 
+  it('handles disabled packages', function() {
+    var packages = [{
+      name: 'some-package',
+      config: () => {}
+    }];
+
+    performImports(importer, ui, packages);
+
+    expect(ui.writeDeprecateLine.callCount).to.equal(0);
+    expect(importer.import.callCount).to.equal(0);
+  });
+
   it('handles legacy import config', function() {
     var packages = [{
       name: 'some-package',
