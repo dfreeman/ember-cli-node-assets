@@ -67,6 +67,17 @@ describe('treeFor', function() {
     });
   });
 
+  it('handles disabled packages', function() {
+    var config = [{
+      name: 'foo',
+      config: () => {}
+    }];
+
+    var tree = treeFor(config, { root: PARENT_ROOT }, ['vendor']);
+
+    return expect(Fixture.build(tree)).to.eventually.deep.equal({});
+  });
+
   it('honors a configured processTree function', function() {
     var parent = { root: PARENT_ROOT };
     var config = [{

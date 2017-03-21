@@ -1,3 +1,7 @@
+## 0.2.2 (March 21, 2017)
+### Fixed
+- Package config callbacks that return nothing are NOW handled correctly. Really.
+
 ## 0.2.1 (March 21, 2017)
 ### Fixed
 - Package config callbacks that return nothing (i.e. are acting as disabled) are now handled correctly.

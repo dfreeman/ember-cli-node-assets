@@ -9,6 +9,10 @@ module.exports = function(defaults) {
         srcDir: 'slick',
         import: ['slick.js', 'slick.css', 'slick-theme.css'],
         public: ['ajax-loader.gif', 'fonts/*']
+      },
+
+      'nonexistent-package': {
+        enabled: false
       }
     }
   });
