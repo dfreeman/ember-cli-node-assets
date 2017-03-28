@@ -45,7 +45,7 @@ Each key in the `nodeAssets` hash corresponds to the name of an npm package you 
 The configuration for `vendor` and `public` will be passed to [`broccoli-funnel`](https://github.com/broccolijs/broccoli-funnel#options) based in the root directory of the node package. The full range of options supported there are available if desired, but for most cases the three documented here are sufficient:
 
 - `include`: An array of file paths (or globs) to be included.
-- `srcDir`: The base directory relative to which `includes` are specified. Defaults to the root of the npm package.
+- `srcDir`: The directory (based at the root of the package) relative to which `include` entries are specified. Defaults to `''`, which represents the package root.
 - `destDir`: The directory in which the files will be placed. Defaults to the name of the package for `vendor`, and `'assets'` for `public`.
 
 ```js
