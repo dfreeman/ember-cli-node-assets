@@ -38,6 +38,8 @@ module.exports = {
 };
 ```
 
+For addons, this package **must** be listed in your package.json's `dependencies`, not `devDependencies`.
+
 ## Module Configuration
 
 Each key in the `nodeAssets` hash corresponds to the name of an npm package you want to include files from. At its core, what you're configuring is two funnels for pulling files from an npm package: one into `vendor` (for importing things like JS and CSS), and one into `public` (to expose things like fonts and images).
