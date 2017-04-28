@@ -46,7 +46,7 @@ module.exports = {
 // ember-cli-build.js for an addon's dummy app
 // Note that this is only for assets you want to use in your dummy app;
 // these assets are not exported to consumers of your addon.
-var app = new EmberAddon(defaults, {
+let app = new EmberAddon(defaults, {
   nodeAssets: {
     // node asset options
   },
