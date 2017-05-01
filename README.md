@@ -26,6 +26,10 @@ let app = new EmberApp(defaults, {
 });
 ```
 
+### For Addons
+
+The package **must** be listed in your package.json's `dependencies`, not `devDependencies`.
+
 ```js
 // index.js for an addon
 module.exports = {
@@ -38,7 +42,16 @@ module.exports = {
 };
 ```
 
-For addons, this package **must** be listed in your package.json's `dependencies`, not `devDependencies`.
+```js
+// ember-cli-build.js for an addon's dummy app
+// Note that this is only for assets you want to use in your dummy app;
+// these assets are not exported to consumers of your addon.
+let app = new EmberAddon(defaults, {
+  nodeAssets: {
+    // node asset options
+  },
+});
+```
 
 ## Module Configuration
 
