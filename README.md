@@ -221,3 +221,24 @@ The configuration below is equivalent to all other sample `slick-carousel` confi
 ```
 
 Note that the import shorthand does not allow you to pass configuration to `import()` (e.g. `{ type: 'test' }` or an [anonymous AMD transform](https://github.com/ember-cli/rfcs/pull/55)). For situations like those, you'll need to specify `vendor` configuration and manually invoke `import()` instead.
+
+## Troubleshooting
+
+### Warning: ignoring input sourcemap for vendor/some/file.js because ENOENT: no such file or directory, open '<...> vendor/some/file.js.map'
+
+This occurs when a file we are importing references a [sourcemap](https://www.html5rocks.com/en/tutorials/developertools/sourcemaps/) which we haven't also imported. To address the warning, simply add the sourcemap file to your list of `vendor` files:
+
+```javascript
+// Example for popper.js
+options: {
+  nodeAssets: {
+    'popper.js': {
+      srcDir: 'dist/umd',
+      import: ['popper.js'],
+      vendor: ['popper.js.map']
+    }
+  }
+},
+```
+
+Note that this will _not_ impact your final build size since [sourcemaps are automatically stripped from production builds](https://ember-cli.com/asset-compilation#source-maps). You can sanity check your final build size by running `ember build -e production`.
