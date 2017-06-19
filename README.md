@@ -53,6 +53,31 @@ let app = new EmberAddon(defaults, {
 });
 ```
 
+### Addons with Fastboot
+If you are importing a library that requires `document`, etc. and using fastboot, you need to do some additional setup. To be compatible with the new fastboot standards, you should add [fastboot-transform](https://github.com/kratiahuja/fastboot-transform) to your dependencies.
+
+You should then pull it in at the top of your `index.js` file, and use it in your `processTree` hook.
+
+```js
+const fastbootTransform = require('fastboot-transform');
+
+...
+
+nodeAssets: {
+  'some-lib': {
+    public: {
+      include: ['images/*.png']
+    },
+    vendor: {
+      include: ['css/some-lib.css'],
+      processTree(input) {
+        return fastbootTransform(input);
+      }
+    }
+  }
+}
+```
+
 ## Module Configuration
 
 Each key in the `nodeAssets` hash corresponds to the name of an npm package you want to include files from. At its core, what you're configuring is two funnels for pulling files from an npm package: one into `vendor` (for importing things like JS and CSS), and one into `public` (to expose things like fonts and images).
