@@ -2,6 +2,10 @@
 
 Incorporate stylesheets, images, globals-style scripts and other assets directly from npm packages into your Ember app or addon.
 
+**NOTE**: as of ember-cli@2.15, it's now possible to [`app.import()` files directly from `node_modules`](https://emberjs.com/blog/2017/09/01/ember-2-15-released.html#toc_app-import-files-within-node_modules). In combination with the introduction of [custom import transforms](https://emberjs.com/blog/2017/10/11/ember-2-16-released.html#toc_changes-in-ember-cli-2-16) in 2.16, this addon is now mostly obsolete.
+
+The primary remaining use case here is for addon authors: if you wish to support consumers using older versions of ember-cli, ember-cli-node-assets continues to provider a way to do so without having to worry too much about the specifics.
+
 ## Goals
 
 Ember CLI makes it relatively simple for users to include files from Bower and in-repo `vendor` directories out of the box. To pull assets from an npm packages, though, requires a bit more elbow grease and understanding of the build and dependency system as a whole.
